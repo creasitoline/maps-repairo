@@ -1,0 +1,113 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [8.955488436989652, 46.007450404954184] },
+            "properties": {
+                "name": "Doctor Phone",
+                "service": "iPhone repair in 15 minutes",
+                "address": "Corso Elvezia 13, 6900 Lugano Ti Svizzera",
+                "phone": "+41 782115221",
+                "website": "https://www.repairo.zone/ch/ticino/lugano-doctor-phone",
+                "country": "Switzerland"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [9.025808638853889, 46.198245103071045] },
+            "properties": {
+                "name": "City Phone 24",
+                "service": "Express Smartphone Repair",
+                "address": "Viale Giuseppe Motta 2, 6500 Bellinzona Ti Svizzera",
+                "phone": "+4191 220 21 55",
+                "website": "https://www.repairo.zone/ch/ticino/bellinzona-city-phone-24",
+                "country": "Switzerland"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [8.800794337004083, 46.172205493891354] },
+            "properties": {
+                "name": "Phone Bellinzona",
+                "service": "iPhone repair in 15 minutes",
+                "address": "Corso Elvezia 13, 6900 Lugano Ti Svizzera",
+                "phone": "+41 782115221",
+                "website": "https://www.repairo.zone/ch/ticino/lugano-doctor-phone",
+                "country": "Switzerland"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [9.031357979303689, 45.833111903798894] },
+            "properties": {
+                "name": "Phone Chiasso",
+                "service": "Express Smartphone Repair",
+                "address": "Viale Giuseppe Motta 2, 6500 Bellinzona Ti Svizzera",
+                "phone": "+4191 220 21 55",
+                "website": "https://www.repairo.zone/ch/ticino/bellinzona-city-phone-24",
+                "country": "Switzerland"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [0.6967575236223836, 47.4363365985243] },
+            "properties": {
+                "name": "Reparez Votre mobile",
+                "service": "PC and Mac assistance",
+                "address": "Via Delle Scuole 5, 6900 Lugano",
+                "phone": "+4191 123 45 67",
+                "website": "https://reparezvotremobile.fr/",
+                "country": "France"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [9.40350165272297, 47.433395223690965] },
+            "properties": {
+                "name": "Mobile Expert",
+                "service": "Reparatur zu einem erschwinglichen Preis",
+                "address": "Rehetobelstrasse 37, 9000 St. Gallen",
+                "phone": "+41 (0)79 410 05 55",
+                "website": "https://www.repairo.zone/ch/st-gallen/mobile-expert",
+                "country": "Switzerland"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [8.954630521648589, 46.01203269902906] },
+            "properties": {
+                "name": "RepairStore",
+                "service": "Computer and smartphone repair",
+                "address": "Piazza Molino Nuovo 1, 6900 Lugano",
+                "phone": "+4191 223 11 11",
+                "website": "https://www.repairo.zone/ch/ticino/lugano-repair-store",
+                "country": "Switzerland"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [12.4964, 41.9028] },
+            "properties": {
+                "name": "Tecno Roma",
+                "service": "Smartphone and PC Repair",
+                "address": "Via del Corso 1, 00186 Roma",
+                "phone": "+39 06 1234567",
+                "website": "https://www.tecnoroma.it",
+                "country": "Italy"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [9.1895, 45.4642] },
+            "properties": {
+                "name": "Milano Ripara",
+                "service": "Certified technical assistance",
+                "address": "Piazza Duomo 1, 20121 Milano",
+                "phone": "+39 02 7654321",
+                "website": "https://www.milanoripara.it",
+                "country": "Italy"
+            }
+        }
+    ]
+}
