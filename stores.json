@@ -119,6 +119,19 @@
                 "phone": "+39 02 7654321",
                 "website": "https://www.milanoripara.it",
                 "country": "Italy"
+               }
+        },
+        {
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [9.190593567926014, 45.46390312799541] },
+            "properties": {
+                "name": "negozio Duomo",
+                "service": "Certified technical assistance",
+                "address": "Piazza Duomo 1, 20121 Milano",
+                "phone": "+39 02 7654321",
+                "website": "https://www.milanoripara.it",
+                "country": "Italy"
+
             }
         }
     ]
