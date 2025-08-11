@@ -119,7 +119,7 @@
                 "phone": "+39 02 7654321",
                 "website": "https://www.milanoripara.it",
                 "country": "Italy"
-               }
+            }
         },
         {
             "type": "Feature",
@@ -131,7 +131,7 @@
                 "phone": "+39 02 7654321",
                 "website": "https://www.milanoripara.it",
                 "country": "Italy"
-              }
+            }
         }
     ]
 }
