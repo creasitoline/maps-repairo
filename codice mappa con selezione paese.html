@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Store Map</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.1.0/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.1.0/mapbox-gl-geocoder.css" type="text/css">
+    
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; font-family: sans-serif; overflow: hidden; box-sizing: border-box; }
+        #map-container { width: 100%; height: 100%; display: flex; flex-direction: row; }
+        #map { flex-grow: 1; position: relative; }
+        #store-list-container { width: 350px; display: flex; flex-direction: column; border-left: 1px solid #ccc; background-color: #f9f9f9; }
+        #country-filter-container { padding: 20px; border-bottom: 1px solid #ccc; }
+        #country-select { width: 100%; padding: 8px; font-size: 1em; border: 1px solid #ccc; border-radius: 4px; }
+        #store-list { overflow-y: auto; padding: 20px; flex-grow: 1; }
+        .store-item { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; transition: background-color 0.2s ease-in-out; border-radius: 5px; margin-bottom: 10px; }
+        .store-item:hover, .store-item.highlighted { background-color: #e6f7ff; }
+        .store-counter { width: 30px; height: 30px; background-color: #2dabe8; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1em; margin-right: 15px; flex-shrink: 0; }
+        .store-details { flex-grow: 1; }
+        .store-details h3 { margin: 0 0 5px; font-size: 1.2em; color: #333; }
+        .store-details p { margin: 0; font-size: 0.9em; color: #666; }
+        .store-button { display: inline-block; margin-top: 10px; padding: 8px 12px; background-color: #2dabe8; color: white; text-decoration: none; border-radius: 4px; font-size: 0.9em; transition: background-color 0.2s ease-in-out; }
+        .store-button:hover { background-color: #1a8fbe; }
+        .mapboxgl-popup-content { padding: 10px; font-family: sans-serif; }
+        .mapboxgl-popup-content h3 { margin-top: 0; margin-bottom: 5px; color: #2dabe8; }
+        .mapboxgl-popup-content p { margin: 0 0 5px; font-size: 0.9em; line-height: 1.3; }
+        .mapboxgl-popup-content .store-button { margin-top: 5px; }
+        .mapboxgl-ctrl-geocoder { position: absolute; top: 10px; left: 10px; z-index: 1; width: 300px; }
+        
+        /* Styles for clusters */
+        .cluster-marker { width: 40px; height: 40px; background-color: #2dabe8; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.2em; cursor: pointer; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+
+        @media (max-width: 768px) {
+            #map-container { flex-direction: column; height: 100vh; }
+            #map { height: 40vh; }
+            #store-list-container { width: 100%; height: 60vh; border-left: none; border-top: 1px solid #ccc; }
+            #store-list { padding: 15px 0; }
+            #country-filter-container { padding: 15px 15px 5px; }
+            .mapboxgl-ctrl-geocoder { width: calc(100% - 20px); top: 10px; left: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <div id="map"></div>
+        <div id="store-list-container">
+            <div id="country-filter-container">
+                <label for="country-select">Select a country:</label>
+                <select id="country-select">
+                    <option value="all">All countries</option>
+                </select>
+            </div>
+            <div id="store-list"></div>
+        </div>
+    </div>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiY3JlYXNpdG9saW5lIiwiYSI6ImNtZTMwbGdqdDAyMTcybHNiOW1idzZ5M2UifQ.74v3E1-dl8CK2Pm2N8Y0oQ';
+        
+        // **ATTENTION**: Below are the store data. Modify only this section to add/remove stores.
+        // I have added the 'country' property to each store.
+        const allStores = {
+            'type': 'FeatureCollection',
+            'features': [
+                {
+                    'type': 'Feature',
+                    'geometry': { 'type': 'Point', 'coordinates': [8.955488436989652, 46.007450404954184] },
+                    'properties': {
+                        'name': 'Doctor Phone',
+                        'service': 'iPhone repair in 15 minutes',
+                        'address': 'Corso Elvezia 13, 6900 Lugano Ti Svizzera',
+                        'phone': '+41 782115221',
+                        'website': 'https://www.repairo.zone/ch/ticino/lugano-doctor-phone',
+                        'country': 'Switzerland'
+                    }
+                },
+                {
+                    'type': 'Feature',
+                    'geometry': { 'type': 'Point', 'coordinates': [9.025808638853889, 46.198245103071045] },
+                    'properties': {
+                        'name': 'City Phone 24',
+                        'service': 'Express Smartphone Repair',
+                        'address': 'Viale Giuseppe Motta 2, 6500 Bellinzona Ti Svizzera',
+                        'phone': '+4191 220 21 55',
+                        'website': 'https://www.repairo.zone/ch/ticino/bellinzona-city-phone-24',
+                        'country': 'Switzerland'
+                    }
+                },
+                {  
+                    'type': 'Feature',
+                    'geometry': { 'type': 'Point', 'coordinates': [8.800794337004083, 46.172205493891354 ] },
+                    'properties': {
+                        'name': ' Phone Bellinzona',
+                        'service': 'iPhone repair in 15 minutes',
+                        'address': 'Corso Elvezia 13, 6900 Lugano Ti Svizzera',
+                        'phone': '+41 782115221',
+                        'website': 'https://www.repairo.zone/ch/ticino/lugano-doctor-phone',
+                        'country': 'Switzerland'
+                    }
+                },
+                {  
+                    'type': 'Feature',
+                    'geometry': { 'type': 'Point', 'coordinates': [9.031357979303689, 45.833111903798894 ] },
+                    'properties': {
+                        'name': 'Phone Chiasso',
+                        'service': 'Express Smartphone Repair',
+                        'address': 'Viale Giuseppe Motta 2, 6500 Bellinzona Ti Svizzera',
+                        'phone': '+4191 220 21 55',
+                        'website': 'https://www.repairo.zone/ch/ticino/bellinzona-city-phone-24',
+                        'country': 'Switzerland'
+                    }
+                },
+                {  
+                    'type': 'Feature',
+                    'geometry': { 'type': 'Point', 'coordinates': [0.6967575236223836, 47.4363365985243] },
+                    'properties': {
+                        'name': 'Reparez Votre mobile',
+                        'service': 'PC and Mac assistance',
+                        'address': 'Via Delle Scuole 5, 6900 Lugano',
+                        'phone': '+4191 123 45 67',
+                        'website': 'https://reparezvotremobile.fr/',
+                        'country': 'France'
+                    }
+                },
+                {  
+                    'type': 'Feature',
+                    'geometry': { 'type': 'Point', 'coordinates': [9.40350165272297, 47.433395223690965] },
+                    'properties': {
+                        'name': 'Mobile Expert',
+                        'service': 'Reparatur zu einem erschwinglichen Preis',
+                        'address': 'Rehetobelstrasse 37, 9000 St. Gallen',
+                        'phone': '+41 (0)79 410 05 55',
+                        'website': 'https://www.repairo.zone/ch/st-gallen/mobile-expert',
+                        'country': 'Switzerland'
+                    }
+                },
+                {  
+                    'type': 'Feature',
+                    'geometry': { 'type': 'Point', 'coordinates': [8.954630521648589, 46.01203269902906] },
+                    'properties': {
+                        'name': 'RepairStore',
+                        'service': 'Computer and smartphone repair',
+                        'address': 'Piazza Molino Nuovo 1, 6900 Lugano',
+                        'phone': '+4191 223 11 11',
+                        'website': 'https://www.repairo.zone/ch/ticino/lugano-repair-store',
+                        'country': 'Switzerland'
+                    }
+                },
+                {
+                    'type': 'Feature',
+                    'geometry': { 'type': 'Point', 'coordinates': [12.4964, 41.9028] },
+                    'properties': {
+                        'name': 'Tecno Roma',
+                        'service': 'Smartphone and PC Repair',
+                        'address': 'Via del Corso 1, 00186 Roma',
+                        'phone': '+39 06 1234567',
+                        'website': 'https://www.tecnoroma.it',
+                        'country': 'Italy'
+                    }
+                },
+                {
+                    'type': 'Feature',
+                    'geometry': { 'type': 'Point', 'coordinates': [9.1895, 45.4642] },
+                    'properties': {
+                        'name': 'Milano Ripara',
+                        'service': 'Certified technical assistance',
+                        'address': 'Piazza Duomo 1, 20121 Milano',
+                        'phone': '+39 02 7654321',
+                        'website': 'https://www.milanoripara.it',
+                        'country': 'Italy'
+                    }
+                }
+            ]
+        };
+        
+        // **END OF STORE DATA**
+
+        let currentStores = allStores;
+
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v12',
+            center: [8.8018, 46.2227], // Initial map center
+            zoom: 7
+        });
+        
+        const geocoder = new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            mapboxgl: mapboxgl,
+            placeholder: 'Search for address or city...',
+            language: 'en',
+            marker: false
+        });
+        map.addControl(geocoder, 'top-left');
+
+        const updateStoresData = (features) => {
+            // Adds an index to each store and sorts by name for consistency
+            features.sort((a, b) => a.properties.name.localeCompare(b.properties.name));
+            features.forEach((store, i) => {
+                store.properties.index = i + 1;
+            });
+            return {
+                'type': 'FeatureCollection',
+                'features': features
+            };
+        };
+
+        const flyToStore = (geometry) => { 
+            map.flyTo({ 
+                center: geometry.coordinates, 
+                zoom: 15, 
+                essential: true 
+            }); 
+            map.once('moveend', () => {
+                map.resize();
+            });
+        };
+        
+        const highlightStore = (element) => {
+            document.querySelectorAll('.store-item').forEach(item => { item.classList.remove('highlighted'); });
+            if (element) { element.classList.add('highlighted'); }
+        };
+
+        const highlightStoreFromMap = (properties) => {
+            const storeIndex = currentStores.features.findIndex(store => 
+                store.properties.name === properties.name &&
+                store.properties.address === properties.address
+            );
+            if (storeIndex !== -1) {
+                const storeItem = document.getElementById(`store-${storeIndex}`);
+                if (storeItem) {
+                    highlightStore(storeItem);
+                    storeItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        };
+
+        const buildStoreList = (storeFeatures) => {
+            const listContainer = document.getElementById('store-list');
+            listContainer.innerHTML = '';
+            storeFeatures.forEach((store, index) => {
+                const storeDiv = document.createElement('div');
+                storeDiv.className = 'store-item';
+                storeDiv.id = `store-${index}`;
+                storeDiv.innerHTML = `
+                    <div class="store-counter">${store.properties.index}</div>
+                    <div class="store-details">
+                        <h3>${store.properties.name}</h3>
+                        <p>${store.properties.service}</p>
+                        <p>${store.properties.address}</p>
+                        <p>Phone: ${store.properties.phone}</p>
+                        <a href="${store.properties.website}" target="_blank" class="store-button">Store</a>
+                    </div>
+                `;
+                storeDiv.addEventListener('click', () => {
+                    flyToStore(store.geometry);
+                    highlightStore(storeDiv);
+                    const popupHtml = `
+                        <h3>${store.properties.name}</h3>
+                        <p>${store.properties.service}</p>
+                        <p>${store.properties.address}</p>
+                        <p>Phone: ${store.properties.phone}</p>
+                        <a href="${store.properties.website}" target="_blank" class="store-button">Store</a>
+                    `;
+                    new mapboxgl.Popup({ offset: 25 }).setHTML(popupHtml).setLngLat(store.geometry.coordinates).addTo(map);
+                });
+                listContainer.appendChild(storeDiv);
+            });
+        };
+
+        const updateMap = (storeFeatures) => {
+            map.getSource('stores').setData(updateStoresData(storeFeatures));
+            buildStoreList(storeFeatures);
+        };
+        
+        map.on('load', () => {
+            // Get the list of countries and populate the dropdown
+            const countries = [...new Set(allStores.features.map(store => store.properties.country))].sort();
+            const selectElement = document.getElementById('country-select');
+            countries.forEach(country => {
+                const option = document.createElement('option');
+                option.value = country;
+                option.textContent = country;
+                selectElement.appendChild(option);
+            });
+
+            // Add the data source with initial store data
+            map.addSource('stores', {
+                type: 'geojson',
+                data: updateStoresData(allStores.features),
+                cluster: true,
+                clusterMaxZoom: 14,
+                clusterRadius: 50
+            });
+
+            // Add a layer for the clusters (the big circles with the number)
+            map.addLayer({
+                id: 'clusters',
+                type: 'circle',
+                source: 'stores',
+                filter: ['has', 'point_count'],
+                paint: {
+                    'circle-color': ['step', ['get', 'point_count'], '#51bbd6', 10, '#f1f075', 30, '#f28cb1'],
+                    'circle-radius': ['step', ['get', 'point_count'], 20, 10, 30, 30, 40],
+                    'circle-stroke-width': 1,
+                    'circle-stroke-color': '#fff'
+                }
+            });
+
+            // Add a layer for the numbers inside the clusters
+            map.addLayer({
+                id: 'cluster-count',
+                type: 'symbol',
+                source: 'stores',
+                filter: ['has', 'point_count'],
+                layout: {
+                    'text-field': ['get', 'point_count_abbreviated'],
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 12
+                },
+                paint: { 'text-color': '#ffffff' }
+            });
+
+            // Add a layer for the individual pins (the unclustered ones)
+            map.addLayer({
+                id: 'unclustered-point',
+                type: 'circle',
+                source: 'stores',
+                filter: ['!', ['has', 'point_count']],
+                paint: {
+                    'circle-color': '#2dabe8',
+                    'circle-radius': 10,
+                    'circle-stroke-width': 1,
+                    'circle-stroke-color': '#fff'
+                }
+            });
+
+            // Add a new layer for the numbers on the individual pins
+            map.addLayer({
+                id: 'unclustered-point-numbers',
+                type: 'symbol',
+                source: 'stores',
+                filter: ['!', ['has', 'point_count']],
+                layout: {
+                    'text-field': ['get', 'index'],
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 12,
+                    'text-offset': [0, 0.1], 
+                    'text-allow-overlap': true 
+                },
+                paint: { 'text-color': '#ffffff' }
+            });
+
+            // Handle clicking on clusters to zoom in
+            map.on('click', 'clusters', (e) => {
+                const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+                const clusterId = features[0].properties.cluster_id;
+                map.getSource('stores').getClusterExpansionZoom(clusterId, (err, zoom) => {
+                    if (err) return;
+                    map.easeTo({
+                        center: features[0].geometry.coordinates,
+                        zoom: zoom
+                    });
+                });
+            });
+
+            // Handle clicking on individual pins to show a popup AND HIGHLIGHT THE LIST
+            map.on('click', 'unclustered-point', (e) => {
+                const coordinates = e.features[0].geometry.coordinates.slice();
+                const properties = e.features[0].properties;
+                const popupHtml = `
+                    <h3>${properties.name}</h3>
+                    <p>${properties.service}</p>
+                    <p>${properties.address}</p>
+                    <p>Phone: ${properties.phone}</p>
+                    <a href="${properties.website}" target="_blank" class="store-button">Store</a>
+                `;
+                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                }
+                new mapboxgl.Popup({ offset: 25 }).setLngLat(coordinates).setHTML(popupHtml).addTo(map);
+                highlightStoreFromMap(properties);
+            });
+            
+            // Change the cursor on hover
+            map.on('mouseenter', 'clusters', () => { map.getCanvas().style.cursor = 'pointer'; });
+            map.on('mouseleave', 'clusters', () => { map.getCanvas().style.cursor = ''; });
+            map.on('mouseenter', 'unclustered-point', () => { map.getCanvas().style.cursor = 'pointer'; });
+            map.on('mouseleave', 'unclustered-point', () => { map.getCanvas().style.cursor = ''; });
+
+            // Event handler for the dropdown
+            document.getElementById('country-select').addEventListener('change', (e) => {
+                const selectedCountry = e.target.value;
+                let filteredFeatures;
+                if (selectedCountry === 'all') {
+                    filteredFeatures = allStores.features;
+                    map.flyTo({ center: [8.8018, 46.2227], zoom: 7 }); // Return to initial view
+                } else {
+                    filteredFeatures = allStores.features.filter(store => store.properties.country === selectedCountry);
+                    if (filteredFeatures.length > 0) {
+                        const firstStoreCoordinates = filteredFeatures[0].geometry.coordinates;
+                        map.flyTo({ center: firstStoreCoordinates, zoom: 9 }); // Move the map to the first store
+                    }
+                }
+                currentStores = updateStoresData(filteredFeatures);
+                updateMap(currentStores.features);
+            });
+            
+            // Initialize the list with all stores
+            buildStoreList(currentStores.features);
+        });
+
+        // The resizing handling is essential.
+        window.addEventListener('resize', () => { map.resize(); });
+    </script>
+</body>
+</html>
