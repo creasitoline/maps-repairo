@@ -13,10 +13,7 @@
                 "country": "Switzerland"
             }
         },
-        {
-         "type": "FeatureCollection",
-         "features": [
-        {
+         {
             "type": "Feature",
             "geometry": { "type": "Point", "coordinates": [8.955488436989652, 46.007450404954184] },
             "properties": {
@@ -126,3 +123,4 @@
         }
     ]
 }
+
