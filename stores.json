@@ -1,4 +1,3 @@
-{
     "type": "FeatureCollection",
     "features": [
         {
@@ -131,8 +130,23 @@
                 "phone": "+39 02 7654321",
                 "website": "https://www.milanoripara.it",
                 "country": "Italy"
-            }
+             {
+    "type": "Feature",
+    "geometry": {
+        "type": "Point",
+        "coordinates": [
+            45.46384295880923,
+            919067940184755
+        ]
+    },
+    "properties": {
+        "name": "prova",
+        "service": "Riparazione in 30 minuti con appuntamento",
+        "address": "Via della Pace 1B Locarno",
+        "phone": "+4191 743 02 04  ",
+        "website": "https://www.repairo.zone/ch/ticino/doctor-phone-lugano",
+        "country": "Svizzera"
+         }
         }
     ]
 }
-
