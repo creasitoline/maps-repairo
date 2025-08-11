@@ -1,22 +1,4 @@
 {
-    "type": "Feature",
-    "geometry": {
-        "type": "Point",
-        "coordinates": [
-            8.798569163991628,
-            46.16927749921181
-        ]
-    },
-    "properties": {
-        "name": "TicinoStore",
-        "service": "Riparazione in 30 minuti con appuntamento",
-        "address": "Via della Pace 1B Locarno",
-        "phone": "+4191 743 02 04  ",
-        "website": "https://www.repairo.zone/ch/ticino/locarno-ticinostore",
-        "country": "Svizzera"
-    }
-},
-{
     "type": "FeatureCollection",
     "features": [
         {
@@ -126,6 +108,24 @@
                 "website": "https://www.milanoripara.it",
                 "country": "Italy"
             }
-        }
+        },
+        { // Inizio del nuovo negozio
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    8.798569163991628,
+                    46.16927749921181
+                ]
+            },
+            "properties": {
+                "name": "TicinoStore",
+                "service": "Riparazione in 30 minuti con appuntamento",
+                "address": "Via della Pace 1B Locarno",
+                "phone": "+4191 743 02 04  ",
+                "website": "https://www.repairo.zone/ch/ticino/locarno-ticinostore",
+                "country": "Svizzera"
+            }
+        } // Fine del nuovo negozio - nessuna virgola perché è l'ultimo
     ]
 }
