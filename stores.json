@@ -8,11 +8,11 @@
                 "name": "TicinoStore",
                 "service": "Riparazione in 30 minuti con appuntamento",
                 "address": "Via della Pace 1B, Locarno Svizzera",
-                "phone": "+4191 743 02 04  ",
+                "phone": "+4191 743 02 04",
                 "website": "https://www.repairo.zone/ch/ticino/locarno-ticinostore",
                 "country": "Switzerland"
             }
-        },
+           },
          {
             "type": "Feature",
             "geometry": { "type": "Point", "coordinates": [8.955488436989652, 46.007450404954184] },
@@ -123,4 +123,5 @@
         }
     ]
 }
+
 
